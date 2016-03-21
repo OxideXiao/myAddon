@@ -23,7 +23,7 @@ var myAddon = {
 	}
 }
 
-/*jquery addon*/
+/*addon use JQuery*/
 var myJAddon = {
 	/*moving module*/
 	moves:{
@@ -38,6 +38,7 @@ var myJAddon = {
 				moveEvent:['mouseWheel'],
 				speed:500
 			};
+			//event object
 			this.eventer = new myAddon.EventEmiter;
 
 			this.init = function(opt_n){
@@ -49,6 +50,7 @@ var myJAddon = {
 			this.control = function(tarN,direction){
 				var $tObj = $(tarN);
 				var dir;
+				//set the value of direction
 				switch (direction){
 					case 'donw':
 						dir = -1;
@@ -58,6 +60,7 @@ var myJAddon = {
 						break;
 				};
 
+				//resize each page
 				this.resize($tObj,dir);
 				$(window).on('resize',function(){
 					that.resize($tObj,dir);
