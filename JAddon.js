@@ -37,22 +37,53 @@
 					s_p:'',
 				}				
 			},opt);
-			var h = opt.hour,m = opt.minute,s = opt.second;
 			
 			return this.each(function(){
-				$.fn.countDownTime(opt.hour,opt.minute,opt.second,$(this),opt);
+				//$.fn.countDownTime(opt.hour,opt.minute,opt.second,$(this),opt);
+				var $obj =$(this);
+				var timer = new $.fn.CountDownTime();
+				timer.bind('counted',function(e){
 				
+					var hour,minute,second;
+					if (e.s<10){
+						second = "0"+e.s;
+					}else{
+						second = e.s;
+					};
+					if (e.m<10){
+						minute = "0"+e.m;
+					}else{
+						minute = e.m;
+					};
+					if (e.h<10){
+						hour = "0"+e.h;
+					}else{
+						hour = e.h;
+					};
+			
+					if (opt.if_combine){
+						$obj.html(hour+":"+minute+":"+second);
+					}else{
+						$obj.find(opt.target.h_p).html(hour);
+						$obj.find(opt.target.m_p).html(minute);
+						$obj.find(opt.target.s_p).html(second);
+					}		
+				});
+				timer.doCount(opt.hour,opt.minute,opt.second)
 			});
 		},
-		countDownTime:function(h,m,s,$obj,opt){
-			var hour,minute,second;
-			var eventBox = {};
+		CountDownTime:function(){
+			
+			this.eventBox = {};
+			this.tId;
 
 			this.doCount = function(h,m,s){
+				var that =this;
 				if (h < 0 || m < 0 || s < 0 || m > 59 || s > 59){
 					h = 0;
 					m = 0;
 					s = 0;
+					tId&&clearTimeout(tId);
 				}
 	
 				if (s > 0){
@@ -70,41 +101,29 @@
 						}
 					}
 				};
-				setTimeout(function(){
-					this.doCount(h,m,s);
+				this.trigger('counted',{h:h,m:m,s:s});
+				tId = setTimeout(function(){
+
+					that.doCount(h,m,s);
 				},1000);
 			};
 			this.bind = function(type,fn){
-				if (!eventBox[type]){
-					eventBox[type] = [fn];
+				if (!this.eventBox[type]){
+					this.eventBox[type] = [fn];
 				}else{
-					eventBox[type].push(fn);
+					this.eventBox[type].push(fn);
 				}
-			}
+			};
+			this.trigger=function(type){
+				if (this.eventBox[type]){
+					for (var i=0;i<this.eventBox[type].length;i++){
+						this.eventBox[type][i].apply(this,[].slice.call(arguments,1));
+					}
+				}
 			
-			if (s<10){
-				second = "0"+s;
-			}else{
-				second = s;
-			};
-			if (m<10){
-				minute = "0"+m;
-			}else{
-				minute = m;
-			};
-			if (h<10){
-				hour = "0"+h;
-			}else{
-				hour = h;
 			};
 			
-			if (opt.if_combine){
-				$obj.html(hour+":"+minute+":"+second);
-			}else{
-				$obj.find(opt.target.h_p).html(hour);
-				$obj.find(opt.target.m_p).html(minute);
-				$obj.find(opt.target.s_p).html(second);
-			}		
+			
 		},
 		"starSelector":function(opt){
 			opt = $.extend({
