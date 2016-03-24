@@ -1,5 +1,6 @@
 ;(function($){
 	$.fn.extend({
+		//add jump link to elements
 		"addhyperLink":function(add){
 			return this.each(function(){
 				$(this).on('click',function(){
@@ -7,6 +8,7 @@
 				});
 			});
 		},
+		//cut the letters in the end which overflow the limitation, and replace them by other html content we wnat.
 		"cutEnd":function(opt){
 			opt = $.extend({
 				maxLength:20,
@@ -22,6 +24,7 @@
 				}
 			});
 		},
+		//
 		"cd_Timer":function(opt){
 			opt = $.extend({
 				hour:0,
@@ -43,27 +46,42 @@
 		},
 		countDownTime:function(h,m,s,$obj,opt){
 			var hour,minute,second;
-			if (h < 0 || m < 0 || s < 0 || m > 59 || s > 59){
-				h = 0;
-				m = 0;
-				s = 0;
-			}
-	
-			if (s > 0){
-				s -= 1;
-			}else if(m == 0 && h == 0){
-				return
-			}else{
-				s = 59;
-				if (m > 0){
-					m -= 1;
-				}else{
-					m = 59;
-					if (h > 0){
-						h -= 1;
-					}
+			var eventBox = {};
+
+			this.doCount = function(h,m,s){
+				if (h < 0 || m < 0 || s < 0 || m > 59 || s > 59){
+					h = 0;
+					m = 0;
+					s = 0;
 				}
+	
+				if (s > 0){
+					s -= 1;
+				}else if(m == 0 && h == 0){
+					return
+				}else{
+					s = 59;
+					if (m > 0){
+						m -= 1;
+					}else{
+						m = 59;
+						if (h > 0){
+							h -= 1;
+						}
+					}
+				};
+				setTimeout(function(){
+					this.doCount(h,m,s);
+				},1000);
 			};
+			this.bind = function(type,fn){
+				if (!eventBox[type]){
+					eventBox[type] = [fn];
+				}else{
+					eventBox[type].push(fn);
+				}
+			}
+			
 			if (s<10){
 				second = "0"+s;
 			}else{
@@ -86,10 +104,7 @@
 				$obj.find(opt.target.h_p).html(hour);
 				$obj.find(opt.target.m_p).html(minute);
 				$obj.find(opt.target.s_p).html(second);
-			}				
-			setTimeout(function(){
-				$.fn.countDownTime(h,m,s,$obj,opt)
-			},1000);
+			}		
 		},
 		"starSelector":function(opt){
 			opt = $.extend({
