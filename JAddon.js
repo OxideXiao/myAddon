@@ -128,52 +128,28 @@
 		"starSelector":function(opt){
 			opt = $.extend({
 				targets_name:'',
+				select_name:'.select',
 				ini:4
 			},opt);
-			funcs = {
-				setDescri:function(ini,obj,tar){
-					switch (ini){
-					case 0:
-						$(obj).find(tar).html('很差');
-						break;
-					case 1:
-						$(obj).find(tar).html('差');
-						break;
-					case 2:
-						$(obj).find(tar).html('一般');
-						break;
-					case 3:
-						$(obj).find(tar).html('很好');
-						break;
-					case 4:
-						$(obj).find(tar).html('完美');
-						break;
-					}
-					
-				}
-			}
 			
 			return this.each(function(){
 				var ini,
 				$this =$(this)
-				if($this.children('.select').length>0){
-					ini = $this.children('.select').length-1;
+				if($this.find(opt.select_name).length>0){
+					ini = $this.find(opt.select_name).length-1;
 				}else{
-					ini =opt.ini;
+					ini =opt.ini-1;
 				}
-				funcs.setDescri(ini,this,'.descri');
 				
 				$this.find(opt.targets_name).on('mouseover',function(){
 					var $star = $(this);
-					$star.addClass("select").nextAll(opt.targets_name).removeClass('select');
-					$star.prevAll(opt.targets_name).addClass('select');
-					funcs.setDescri($star.prevAll(opt.targets_name).length,$star.parent(),'.descri');
+					$star.addClass("select").nextAll(opt.targets_name).removeClass(opt.select_name);
+					$star.prevAll(opt.targets_name).addClass(opt.select_name);
 				}).on('mouseout',function(){
 					var $star = $(this);
-					$star.parent().children(opt.targets_name).eq(ini).addClass('select')
-					.siblings(opt.targets_name).removeClass('select');
-					$star.parent().children(opt.targets_name).eq(ini).prevAll(opt.targets_name).addClass('select');
-					funcs.setDescri(ini,$star.parent(),'.descri');
+					var $ini_star = $star.parent().children(opt.targets_name).eq(ini);
+					$ini_star.addClass(opt.select_name).siblings(opt.targets_name).removeClass(opt.select_name);
+					$ini_star.prevAll(opt.targets_name).addClass(opt.select_name);
 				}).on('click',function(){
 					ini = $(this).prevAll(opt.targets_name).length;
 				})
